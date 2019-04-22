@@ -10,7 +10,7 @@ import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 import org.http4k.serverless.AppLoader
 
-fun main(args: Array<String>) {
+fun main() {
     Root().apiRoutes().asServer(SunHttp(8080)).start()
     println("Server started on port 8080")
 }

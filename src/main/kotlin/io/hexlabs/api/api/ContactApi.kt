@@ -13,7 +13,7 @@ import org.http4k.routing.routes
 
 private val extractContactFrom = Body.auto<Contact>().toLens()
 
-class ContactApi(val contactService: ContactService) : Api {
+class ContactApi(private val contactService: ContactService) : Api {
     override fun apiRoutes() = routes(
         "/contact" bind routes(
             Method.POST to { request: Request ->
