@@ -17,7 +17,7 @@ interface ContactService {
 class ConnectedContactService : ContactService {
     override fun send(contact: Contact) {
         val slackMessage = SlackMessage(attachments = listOf(
-            Attachment(authorName = contact.name, text = contact.message, fields = listOf(
+            Attachment(authorName = contact.name, text = contact.message, color = "#888cda", fields = listOf(
                 Field(contact.email),
                 Field(contact.telephone)
             ))
@@ -31,5 +31,5 @@ class ConnectedContactService : ContactService {
 }
 
 data class SlackMessage(val attachments: List<Attachment>)
-data class Attachment(@JsonProperty("author_name") val authorName: String, val text: String, val fields: List<Field>)
+data class Attachment(@JsonProperty("author_name") val authorName: String, val text: String, val color: String, val fields: List<Field>)
 data class Field(val value: String)
