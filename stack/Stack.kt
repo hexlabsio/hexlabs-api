@@ -20,8 +20,10 @@ class Stack : StackBuilder {
                     }
                 }
                 http(cors = true) {
-                    path("/") { Method.GET(); }
-                    path("contact") { Method.POST(); }
+                    path("/") {
+                        Method.GET()
+                        path("contact") { Method.POST(); }
+                    }
                 }
             }
         }

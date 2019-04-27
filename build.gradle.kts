@@ -37,6 +37,8 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     }
 }
 
+sourceSets["test"].java.srcDir("stack")
+
 dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect"))
@@ -45,7 +47,7 @@ dependencies {
     compile("org.http4k:http4k-serverless-lambda:$http4kVersion")
 
     testImplementation("io.kloudformation:kloudformation:0.1.119")
-    testImplementation("io.hexlabs:kloudformation-serverless-module:0.1.7")
+    testImplementation("io.hexlabs:kloudformation-serverless-module:0.1.10")
 
     testImplementation("io.mockk:mockk:1.9.2.kotlin12")
     testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version = "1.3.21")
