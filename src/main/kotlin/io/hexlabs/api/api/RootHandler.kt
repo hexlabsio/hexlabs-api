@@ -32,7 +32,7 @@ class Root(
         .then(Filters.CATCH_ALL)
         .then(Filters.CORS)
         .then(routes(
-            "/" bind Method.GET to { Response(OK) } ,
+            "/" bind Method.GET to { Response(OK) },
             contactApi.apiRoutes()
         ))
 }
