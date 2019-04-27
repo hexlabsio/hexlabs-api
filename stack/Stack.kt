@@ -8,7 +8,7 @@ import io.kloudformation.resource.aws.ec2.securityGroup
 
 class Stack : StackBuilder {
     override fun KloudFormation.create(args: List<String>) {
-        val serverless = serverless("hexlabs-api", "dev", +"hexlabs-deployments", privateConfig = Serverless.PrivateConfig(+listOf(securityGroup(+"HexLabs Lambda").GroupId()))) {
+        serverless("hexlabs-api", "dev", +"hexlabs-deployments", privateConfig = Serverless.PrivateConfig(+listOf(securityGroup(+"HexLabs Lambda").GroupId()))) {
             serverlessFunction("hexlabs-api", +args.first(), +"org.http4k.serverless.lambda.LambdaFunction::handle", +"java8") {
                 lambdaFunction {
                     timeout(30)
