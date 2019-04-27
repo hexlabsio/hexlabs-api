@@ -29,7 +29,7 @@ class Stack : StackBuilder {
             }
         }
         val restApi = serverless.functions.flatMap { it.httpEvents.map { it.restApi } }.first()
-        basePathMapping(+"api.hexlabs.io") {
+        basePathMapping(+"api.hexlabs.io", dependsOn = listOf(restApi.logicalName)) {
             basePath("web")
             restApiId(restApi.ref())
             stage("dev")
