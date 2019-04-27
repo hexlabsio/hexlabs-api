@@ -4,11 +4,12 @@ import io.hexlabs.kloudformation.module.serverless.serverless
 import io.kloudformation.KloudFormation
 import io.kloudformation.StackBuilder
 import io.kloudformation.json
+import io.kloudformation.resource.aws.apigateway.basePathMapping
 import io.kloudformation.resource.aws.ec2.securityGroup
 
 class Stack : StackBuilder {
     override fun KloudFormation.create(args: List<String>) {
-        serverless("hexlabs-api", "dev", +"hexlabs-deployments", privateConfig = Serverless.PrivateConfig(+listOf(securityGroup(+"HexLabs Lambda").GroupId()))) {
+        val serverless = serverless("hexlabs-api", "dev", +"hexlabs-deployments", privateConfig = Serverless.PrivateConfig(+listOf(securityGroup(+"HexLabs Lambda").GroupId()))) {
             serverlessFunction("hexlabs-api", +args.first(), +"org.http4k.serverless.lambda.LambdaFunction::handle", +"java8") {
                 lambdaFunction {
                     timeout(30)
@@ -26,6 +27,12 @@ class Stack : StackBuilder {
                     }
                 }
             }
+        }
+        val restApi = serverless.functions.flatMap { it.httpEvents.map { it.restApi } }.first()
+        basePathMapping(+"api.hexlabs.io") {
+            basePath("web")
+            restApiId(restApi.ref())
+            stage("dev")
         }
     }
 }
