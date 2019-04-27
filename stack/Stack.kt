@@ -4,7 +4,6 @@ import io.hexlabs.kloudformation.module.serverless.serverless
 import io.kloudformation.KloudFormation
 import io.kloudformation.StackBuilder
 import io.kloudformation.json
-import io.kloudformation.resource.aws.apigateway.basePathMapping
 import io.kloudformation.resource.aws.ec2.securityGroup
 
 class Stack : StackBuilder {
