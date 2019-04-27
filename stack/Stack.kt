@@ -21,19 +21,13 @@ class Stack : StackBuilder {
                     }
                 }
                 http(cors = true) {
+                    httpBasePathMapping(+"api.hexlabs.io", +"web")
                     path("/") {
                         Method.GET()
                         path("contact") { Method.POST(); }
                     }
                 }
             }
-        }
-        val restApi = serverless.functions.flatMap { it.httpEvents.map { it.restApi } }.first()
-        val deployment = serverless.functions.flatMap { it.httpEvents.map { it.deployment } }.first()
-        basePathMapping(+"api.hexlabs.io", dependsOn = listOf(deployment.logicalName)) {
-            basePath("web")
-            restApiId(restApi.ref())
-            stage("dev")
         }
     }
 }
