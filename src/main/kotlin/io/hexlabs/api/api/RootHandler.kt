@@ -20,7 +20,7 @@ fun main() {
 }
 
 object RootApi : AppLoader {
-    override fun invoke(environment: Map<String, String>): HttpHandler = Root().apiRoutes()
+    override fun invoke(environment: Map<String, String>): HttpHandler = Root().apiRoutes().withBasePath("web")
 }
 
 class Root(
