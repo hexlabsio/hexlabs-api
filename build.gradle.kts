@@ -1,7 +1,30 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.hexlabs.kloudformation.module.serverless.Method
+import io.hexlabs.kloudformation.module.serverless.Serverless
+import io.hexlabs.kloudformation.module.serverless.serverless
+import io.kloudformation.json
+import io.kloudformation.model.KloudFormationTemplate
+import io.kloudformation.resource.aws.ec2.securityGroup
+import io.klouds.kloudformation.gradle.plugin.KloudFormationConfiguration
+import io.klouds.kloudformation.gradle.plugin.Stack
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven("https://dl.bintray.com/hexlabsio/kloudformation")
+    }
+    dependencies {
+        classpath("io.klouds.kloudformation.gradle.plugin:kloudformation-gradle-plugin:0.5-SNAPSHOT")
+        classpath("io.hexlabs:kloudformation-serverless-module:0.1.13")
+    }
+}
+
+apply(plugin = "io.klouds.kloudformation.gradle.plugin")
 
 plugins {
     kotlin("jvm") version "1.3.21"
@@ -32,9 +55,6 @@ repositories {
 
 val shadowJar by tasks.getting(ShadowJar::class) {
     archiveClassifier.set("uber")
-    manifest {
-        attributes(mapOf("Main-Class" to "io.hexlabs.kloudformation.runner.DeployKt"))
-    }
 }
 
 sourceSets["test"].java.srcDir("stack")
@@ -68,7 +88,43 @@ artifacts {
 }
 
 configure<KtlintExtension> {
-    outputToConsole.set(true)
-    coloredOutput.set(true)
     reporters.set(setOf(ReporterType.CHECKSTYLE, ReporterType.JSON))
+}
+
+tasks.findByPath("uploadDeploymentResources")!!.dependsOn += shadowJar
+
+configure<KloudFormationConfiguration> {
+    stacks = listOf(
+        Stack(
+            stackName = "hexlabs-api",
+            template = { args -> KloudFormationTemplate.create {
+                serverless("hexlabs-api", "dev", +"hexlabs-deployments", privateConfig = Serverless.PrivateConfig(+listOf(securityGroup(+"HexLabs Lambda").GroupId()))) {
+                    serverlessFunction("hexlabs-api", +args.getValue("codeLocation"), +"org.http4k.serverless.lambda.LambdaFunction::handle", +"java8") {
+                        lambdaFunction {
+                            timeout(30)
+                            memorySize(2048)
+                            environment {
+                                variables(
+                                    json(mapOf(
+                                        "HTTP4K_BOOTSTRAP_CLASS" to "io.hexlabs.api.api.RootApi"
+                                    ))
+                                )
+                            }
+                        }
+                        http(cors = true) {
+                            httpBasePathMapping(+"api.hexlabs.io", +"web")
+                            path("/") {
+                                Method.GET()
+                                path("contact") { Method.POST(); }
+                            }
+                        }
+                    }
+                }
+            }},
+            region = "eu-west-1",
+            uploadDeploymentResources = true,
+            uploadLocation = "${shadowJar.archiveFile.get().asFile.absolutePath}",
+            uploadBucket = "hexlabs-deployments"
+        )
+    )
 }
