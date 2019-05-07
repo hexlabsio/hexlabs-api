@@ -13,23 +13,18 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 buildscript {
     repositories {
-        mavenLocal()
-        jcenter()
-        mavenCentral()
         maven("https://dl.bintray.com/hexlabsio/kloudformation")
     }
     dependencies {
-        classpath("io.klouds.kloudformation.gradle.plugin:kloudformation-gradle-plugin:0.5-SNAPSHOT")
         classpath("io.hexlabs:kloudformation-serverless-module:0.1.13")
     }
 }
-
-apply(plugin = "io.klouds.kloudformation.gradle.plugin")
 
 plugins {
     kotlin("jvm") version "1.3.21"
     id("org.jlleitschuh.gradle.ktlint") version "7.1.0"
     id("com.github.johnrengelman.shadow") version "4.0.4"
+    id("io.klouds.kloudformation.gradle.plugin") version "0.1.4"
 }
 
 fun version(): String {
